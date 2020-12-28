@@ -10,4 +10,5 @@ public class ArchitectureDesignModeApplication {
         SpringApplication.run(ArchitectureDesignModeApplication.class, args);
     }
 
+
 }
