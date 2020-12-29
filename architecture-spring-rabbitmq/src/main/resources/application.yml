@@ -1,0 +1,12 @@
+server:
+  port: 9093
+
+spring:
+  application:
+    name: architecture-spring-rabbitmq
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    virtualHost: /
