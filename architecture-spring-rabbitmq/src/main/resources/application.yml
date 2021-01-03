@@ -7,6 +7,18 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
+    virtualHost: /
     username: guest
     password: guest
-    virtualHost: /
+    publisher-confirm-type: correlated #确认消息已发送到交换机(Exchange)
+    publisher-returns: true #确认消息已发送到队列(Queue)
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual # manual手动确认，none无应答，auto自动确认
+        retry:
+         enabled: true # 失败重试机制，默认为false.
+         max-attempts: 1 # 失败后，再重试几次,默认为：3
+      direct:
+        acknowledge-mode: manual # manual手动确认，none无应答，auto自动确认

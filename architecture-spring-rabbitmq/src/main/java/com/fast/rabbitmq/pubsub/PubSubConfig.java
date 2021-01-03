@@ -66,7 +66,7 @@ public class PubSubConfig {
      */
     @Bean
     Binding bindingPublishOne(Queue publishOne, FanoutExchange pulishExchange) {
-        Binding binding = BindingBuilder.bind(publishOne).to(pulishExchange);
+        Binding binding = BindingBuilder.bind(publishOne()).to(pulishExchange());
         return binding;
     }
 
