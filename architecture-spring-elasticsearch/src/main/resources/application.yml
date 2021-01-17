@@ -1,2 +1,6 @@
 server:
   port: 9094
+# Elasticsearch配置
+elasticsearch:
+  hostname: 127.0.0.1
+  port: 9200
