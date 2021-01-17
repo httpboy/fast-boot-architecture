@@ -14,6 +14,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.ParsedAvg;
+import org.elasticsearch.search.aggregations.metrics.ParsedSum;
 import org.elasticsearch.search.aggregations.metrics.ParsedValueCount;
 import org.elasticsearch.search.aggregations.metrics.ValueCountAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -48,14 +49,16 @@ public class AggregationController {
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             //根据姓名进行分组统计个数
             TermsAggregationBuilder field = AggregationBuilders.terms("terms_name").field("name.keyword");
-            ValueCountAggregationBuilder countField = AggregationBuilders.count("count_name").field("name.keyword");
+            AggregationBuilder countField = AggregationBuilders.count("count_name").field("name.keyword");
             field.subAggregation(countField);
+            field.size(100);
             searchSourceBuilder.aggregation(field);
-            SearchRequest searchRequest = new SearchRequest(Constant.INDEX, Constant.INDEX).source(searchSourceBuilder);
+            SearchRequest searchRequest = new SearchRequest(Constant.INDEX).source(searchSourceBuilder);
             SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             //分组在es中是分桶
             ParsedStringTerms termsName = response.getAggregations().get("terms_name");
             List<? extends Terms.Bucket> buckets = termsName.getBuckets();
+            log.info("分组统计 size " + buckets.size());
             List<Map<String, String>> resultList = new ArrayList<>();
             buckets.forEach(naem -> {
                 String key = (String) naem.getKey();
@@ -73,8 +76,8 @@ public class AggregationController {
     }
 
     /**
-     * 统计姓名为张三的 平均年龄
-     * select avg(age) age from user where name=张三
+     * 统计姓名为xxx的 平均价格
+     * select avg(age) age from user where name=xxx
      *
      * @return List<User>
      */
@@ -82,15 +85,71 @@ public class AggregationController {
     public Object countAge(String name) {
         try {
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            QueryBuilder names = QueryBuilders.termQuery("name", name);
-            AggregationBuilder avgAge = AggregationBuilders.avg("avg_age").field("age");
+            QueryBuilder names = QueryBuilders.termQuery("name.keyword", name);
+            AggregationBuilder avgAge = AggregationBuilders.avg("avg_price").field("price");
             searchSourceBuilder.aggregation(avgAge);
             searchSourceBuilder.query(names);
             searchSourceBuilder.size(0);
-            SearchRequest searchRequest = new SearchRequest(Constant.INDEX, Constant.INDEX).source(searchSourceBuilder);
+            SearchRequest searchRequest = new SearchRequest(Constant.INDEX).source(searchSourceBuilder);
             SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            ParsedAvg avgAggregationBuilder = response.getAggregations().get("avg_age");
-            return (long) avgAggregationBuilder.value();
+            ParsedAvg avgPrice = response.getAggregations().get("avg_price");
+            Map<String, String> map = new HashMap<>(16);
+            map.put(name, avgPrice.value() + "");
+            return map;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 统计姓名为xxx的 年龄总和
+     * select sum(age) age from user where name=xxx
+     *
+     * @param name
+     * @return
+     */
+    @RequestMapping(value = "/sumAge")
+    public Object sumAge(String name) {
+        try {
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            QueryBuilder names = QueryBuilders.termQuery("name.keyword", name);
+            AggregationBuilder sumAge = AggregationBuilders.sum("total_sum").field("price");
+            searchSourceBuilder.aggregation(sumAge);
+            searchSourceBuilder.query(names);
+            searchSourceBuilder.size(0);
+            SearchRequest searchRequest = new SearchRequest(Constant.INDEX).source(searchSourceBuilder);
+            SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            ParsedSum.SingleValue singleValue = response.getAggregations().get("total_sum");
+            Map<String, String> map = new HashMap<>(16);
+            map.put(name, singleValue.value() + "");
+            return map;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 求出name=xxx中价格的最低值
+     * select min(*)
+     *
+     * @param name
+     * @return
+     */
+    @RequestMapping(value = "/minPrice")
+    public Object minPrice(String name) {
+        try {
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            QueryBuilder names = QueryBuilders.termQuery("name.keyword", name);
+            AggregationBuilder sumAge = AggregationBuilders.min("min").field("price");
+            searchSourceBuilder.aggregation(sumAge);
+            searchSourceBuilder.query(names);
+            searchSourceBuilder.size(0);
+            SearchRequest searchRequest = new SearchRequest(Constant.INDEX).source(searchSourceBuilder);
+            SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            ParsedSum.SingleValue singleValue = response.getAggregations().get("min");
+            Map<String, String> map = new HashMap<>(16);
+            map.put(name, singleValue.value() + "");
+            return map;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
