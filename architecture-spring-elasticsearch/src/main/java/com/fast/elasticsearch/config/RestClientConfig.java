@@ -12,9 +12,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * RestClientConfig
- *
- * @author wliduo[i@dolyw.com]
- * @date 2019/8/14 15:34
  */
 @Configuration
 public class RestClientConfig {
@@ -28,10 +25,7 @@ public class RestClientConfig {
     /**
      * LowLevelRestConfig
      *
-     * @param
-     * @return org.elasticsearch.client.RestClient
-     * @author wliduo[i@dolyw.com]
-     * @date 2019/8/12 18:56
+     * @return
      */
     @Bean
     public RestClient restClient() {
@@ -47,10 +41,7 @@ public class RestClientConfig {
     /**
      * HighLevelRestConfig
      *
-     * @param
-     * @return org.elasticsearch.client.RestClient
-     * @author wliduo[i@dolyw.com]
-     * @date 2019/8/12 18:56
+     * @return
      */
     @Bean
     public RestHighLevelClient restHighLevelClient() {

@@ -5,8 +5,6 @@ import com.fast.elasticsearch.base.BaseResult;
 import com.fast.elasticsearch.constant.Constant;
 import com.fast.elasticsearch.entity.dto.BookDto;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -15,13 +13,10 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -48,7 +43,7 @@ import java.util.Map;
  * @date 2019/8/14 16:24
  */
 @RestController
-@RequestMapping("/high")
+@RequestMapping("/book")
 public class BookController {
 
     /**
@@ -164,12 +159,12 @@ public class BookController {
 
     /**
      * 根据ID查询
+     * <p>
+     * select * from user where id=""
      *
      * @param id
-     * @return com.example.common.BaseResult
+     * @return
      * @throws IOException
-     * @author wliduo[i@dolyw.com]
-     * @date 2019/8/15 14:10
      */
     @GetMapping("/book/{id}")
     public BaseResult getById(@PathVariable("id") String id) throws IOException {
@@ -185,10 +180,8 @@ public class BookController {
      * 添加文档
      *
      * @param bookDto
-     * @return com.example.common.BaseResult
-     * @throws
-     * @author wliduo[i@dolyw.com]
-     * @date 2019/8/15 16:01
+     * @return
+     * @throws IOException
      */
     @PostMapping("/book")
     public BaseResult add(@RequestBody BookDto bookDto) throws IOException {
@@ -207,10 +200,8 @@ public class BookController {
      * 修改文档
      *
      * @param bookDto
-     * @return com.example.common.BaseResult
-     * @throws
-     * @author wliduo[i@dolyw.com]
-     * @date 2019/8/15 16:02
+     * @return
+     * @throws IOException
      */
     @PutMapping("/book")
     public BaseResult update(@RequestBody BookDto bookDto) throws IOException {
@@ -226,10 +217,8 @@ public class BookController {
      * 删除文档
      *
      * @param id
-     * @return com.example.common.BaseResult
-     * @throws
-     * @author wliduo[i@dolyw.com]
-     * @date 2019/8/15 16:02
+     * @return
+     * @throws IOException
      */
     @DeleteMapping("/book/{id}")
     public BaseResult deleteById(@PathVariable("id") String id) throws IOException {

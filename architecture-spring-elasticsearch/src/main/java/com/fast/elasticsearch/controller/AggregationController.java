@@ -16,7 +16,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 import org.elasticsearch.search.aggregations.metrics.ParsedAvg;
 import org.elasticsearch.search.aggregations.metrics.ParsedSum;
 import org.elasticsearch.search.aggregations.metrics.ParsedValueCount;
-import org.elasticsearch.search.aggregations.metrics.ValueCountAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +39,8 @@ public class AggregationController {
 
     /**
      * 根据姓名，分组统计个数
+     *
+     * select count(id) from table group by name
      *
      * @return
      */
@@ -102,7 +103,7 @@ public class AggregationController {
     }
 
     /**
-     * 统计姓名为xxx的 年龄总和
+     * 统计姓名为xxx的年龄总和
      * select sum(age) age from user where name=xxx
      *
      * @param name
@@ -130,7 +131,7 @@ public class AggregationController {
 
     /**
      * 求出name=xxx中价格的最低值
-     * select min(*)
+     * select min(xxx) from table where name=xxx
      *
      * @param name
      * @return
@@ -154,4 +155,7 @@ public class AggregationController {
             throw new RuntimeException(e);
         }
     }
+
+
+
 }
