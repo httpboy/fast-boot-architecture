@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fast.elasticsearch.base.BaseResult;
 import com.fast.elasticsearch.constant.Constant;
 import com.fast.elasticsearch.entity.dto.BookDto;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -11,15 +12,19 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.ClearScrollRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -229,4 +234,94 @@ public class BookController {
         return new BaseResult(HttpStatus.OK.value(), "删除成功", deleteResponse);
     }
 
+    /**
+     * 根据索引查询10条数据(默认10条数据)
+     */
+
+    @RequestMapping(value = "/selectAll")
+    public BaseResult selectAll() {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
+        searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.size(100);
+        SearchRequest searchRequest = new SearchRequest(Constant.INDEX).source(searchSourceBuilder);
+
+        SearchResponse response = null;
+        try {
+            response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SearchHit[] searchHits = response.getHits().getHits();
+        // 遍历封装列表对象
+        List<BookDto> bookDtoList = new ArrayList<>();
+        for (SearchHit searchHit : searchHits) {
+            bookDtoList.add(JSON.parseObject(searchHit.getSourceAsString(), BookDto.class));
+        }
+        // 封装Map参数返回
+        Map<String, Object> result = new HashMap<String, Object>(16);
+        result.put("count", searchHits.length);
+        result.put("data", bookDtoList);
+
+        return new BaseResult(HttpStatus.OK.value(), "获取数据成功", result);
+    }
+
+    /**
+     * 使用游标一次查出全部结果
+     * <p>
+     * Elasticsearch中进行大数据量查询时，往往因为设备、网络传输问题影响查询数据的效率；
+     * Elasticsearch中提供了Scroll（游标）的方式对数据进行少量多批次的滚动查询，
+     * 来提高查询效率
+     */
+
+    @RequestMapping(value = "/scrollSearchAll")
+    public BaseResult scrollSearchAll() {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        SearchRequest searchRequest = new SearchRequest(Constant.INDEX).source(searchSourceBuilder);
+        Scroll scroll = new Scroll(TimeValue.timeValueSeconds(5));
+        searchRequest.scroll(scroll);
+        SearchResponse searchResponse = null;
+        try {
+            searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String scrollId = searchResponse.getScrollId();
+        SearchHit[] hits = searchResponse.getHits().getHits();
+        List<SearchHit> resultSearchHit = new ArrayList<>();
+        while (ArrayUtils.isNotEmpty(hits)) {
+            for (SearchHit hit : hits) {
+                resultSearchHit.add(hit);
+            }
+            SearchScrollRequest searchScrollRequest = new SearchScrollRequest(scrollId);
+            searchScrollRequest.scroll(scroll);
+            SearchResponse searchScrollResponse = null;
+            try {
+                searchScrollResponse = restHighLevelClient.searchScroll(searchScrollRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            scrollId = searchScrollResponse.getScrollId();
+            hits = searchScrollResponse.getHits().getHits();
+        }
+        //及时清除es快照，释放资源
+        ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
+        clearScrollRequest.addScrollId(scrollId);
+        try {
+            restHighLevelClient.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 遍历封装列表对象
+        List<BookDto> bookDtoList = new ArrayList<>();
+        for (SearchHit searchHit : resultSearchHit) {
+            bookDtoList.add(JSON.parseObject(searchHit.getSourceAsString(), BookDto.class));
+        }
+        // 封装Map参数返回
+        Map<String, Object> result = new HashMap<String, Object>(16);
+        result.put("count", resultSearchHit.size());
+        result.put("data", bookDtoList);
+        return new BaseResult(HttpStatus.OK.value(), "获取数据成功", result);
+    }
 }
