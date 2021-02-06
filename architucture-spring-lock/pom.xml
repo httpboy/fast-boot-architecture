@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.fast</groupId>
-    <artifactId>architucture-spring-lock</artifactId>
+    <artifactId>architecture-spring-lock</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>architucture-spring-lock</name>
     <description>Demo project for Spring Boot</description>
