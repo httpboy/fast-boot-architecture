@@ -17,8 +17,13 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual # manual手动确认，none无应答，auto自动确认
+        default-requeue-rejected: true #重试次数超过上面的设置之后是否丢弃（false不丢弃时需要写相应代码将该消息加入死信队列）
         retry:
-         enabled: true # 失败重试机制，默认为false.
-         max-attempts: 1 # 失败后，再重试几次,默认为：3
+          enabled: true # 失败重试机制，默认为false.
+          max-attempts: 4 # 失败后，再重试几次,默认为：3
+          max-interval: 6000ms   # 重试最大间隔时间
+          initial-interval: 2000ms  # 重试间隔时间
+          multiplier: 2 #乘子  重试间隔*乘子得出下次重试间隔  2s  4s  8s  此处8s>6s  走6s
+
       direct:
         acknowledge-mode: manual # manual手动确认，none无应答，auto自动确认
