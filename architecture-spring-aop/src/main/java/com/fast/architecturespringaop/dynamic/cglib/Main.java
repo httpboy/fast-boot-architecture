@@ -13,5 +13,6 @@ public class Main {
 
         Person person = (Person) enhancer.create();
         person.doWork();
+        //test
     }
 }
