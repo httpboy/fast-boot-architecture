@@ -11,7 +11,7 @@
     <groupId>com.fast</groupId>
     <artifactId>architecture-spring-lock</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>architucture-spring-lock</name>
+    <name>architecture-spring-lock</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
