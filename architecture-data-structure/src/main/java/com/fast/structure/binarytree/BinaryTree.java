@@ -6,6 +6,11 @@ package com.fast.structure.binarytree;
 public class BinaryTree {
     TreeNode root;
 
+    /**
+     * 添加元素
+     *
+     * @param data
+     */
     public void put(int data) {
         if (root == null) {
             root = new TreeNode(data);
@@ -32,6 +37,38 @@ public class BinaryTree {
                     currentNode = currentNode.right;
                 }
             }
+        }
+    }
+
+    /**
+     * 递归先序遍历
+     */
+
+    public void recursionPreOrder(TreeNode currentNode) {
+        if (currentNode != null) {
+            System.out.print(currentNode.data+",");
+            recursionPreOrder(currentNode.left);
+            recursionPreOrder(currentNode.right);
+        }
+    }
+    /**
+     * 递归中序遍历
+     */
+    public void recursionMiddleOrder(TreeNode currentNode) {
+        if (currentNode != null) {
+            recursionPreOrder(currentNode.left);
+            System.out.print(currentNode.data+",");
+            recursionPreOrder(currentNode.right);
+        }
+    }
+    /**
+     * 递归后序遍历
+     */
+    public void recursionPostOrder(TreeNode currentNode) {
+        if (currentNode != null) {
+            recursionPreOrder(currentNode.left);
+            recursionPreOrder(currentNode.right);
+            System.out.print(currentNode.data+",");
         }
     }
 }

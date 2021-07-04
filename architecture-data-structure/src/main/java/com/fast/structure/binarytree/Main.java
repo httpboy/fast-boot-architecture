@@ -9,5 +9,13 @@ public class Main {
         binaryTree.put(4);
         binaryTree.put(6);
 
+
+        System.out.println("先序遍历");
+        binaryTree.recursionPreOrder(binaryTree.root);
+        System.out.println("\n中序遍历");
+        binaryTree.recursionMiddleOrder(binaryTree.root);
+        System.out.println("\n后序遍历");
+        binaryTree.recursionPostOrder(binaryTree.root);
+
     }
 }
