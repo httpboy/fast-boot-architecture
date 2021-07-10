@@ -104,27 +104,29 @@ public class BinaryTree {
                 middleNext.left = current.left;
             }
         }
-
     }
 
-    private TreeNode getMiddleNext(TreeNode current) {
-        //中序后继节点父亲节点
-        TreeNode parentNode = current;
-        //中序后继节点
-        TreeNode middleNext = current.right;
-        while (middleNext.left != null) {
-            //记录父亲节点
-            parentNode = middleNext;
-            //记录中序后继节点
-            middleNext = middleNext.left;
+    /**
+     * 判断二叉搜索树种是否存在某个元素
+     *
+     * @param data
+     * @return
+     */
+    public int exist(int data) {
+        TreeNode current = root;
+        while (current.data != data) {
+            if (data < current.data) {
+                current = current.left;
+            } else {
+                current = current.right;
+            }
+            if (current == null) {
+                System.out.println("该元素不存在");
+                return -1;
+            }
         }
-        //如果存在中序后继节点，则将父亲节点指向中序后继节点的右孩子且将中序后继节点右孩子指向当前节点的右孩子
-        if (middleNext != current.right) {
-            parentNode.left = middleNext.right;
-            middleNext.right = current.right;
-        }
+        return current.data;
 
-        return middleNext;
     }
 
     /**
@@ -159,5 +161,32 @@ public class BinaryTree {
             recursionPreOrder(currentNode.right);
             System.out.print(currentNode.data + ",");
         }
+    }
+
+
+    /**
+     * 获取当前节点右孩子的中序后继节点
+     *
+     * @param current
+     * @return
+     */
+    private TreeNode getMiddleNext(TreeNode current) {
+        //中序后继节点父亲节点
+        TreeNode parentNode = current;
+        //中序后继节点
+        TreeNode middleNext = current.right;
+        while (middleNext.left != null) {
+            //记录父亲节点
+            parentNode = middleNext;
+            //记录中序后继节点
+            middleNext = middleNext.left;
+        }
+        //如果存在中序后继节点，则将父亲节点指向中序后继节点的右孩子且将中序后继节点右孩子指向当前节点的右孩子
+        if (middleNext != current.right) {
+            parentNode.left = middleNext.right;
+            middleNext.right = current.right;
+        }
+
+        return middleNext;
     }
 }

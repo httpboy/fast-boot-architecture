@@ -30,6 +30,9 @@ public class Main {
 //        binaryTree.remove(80);
         System.out.println("先序遍历");
         binaryTree.recursionPreOrder(binaryTree.root);
+        System.out.println("\n判断二叉搜索树是否存在某个元素");
+        System.out.println(binaryTree.exist(80));
+        ;
 
     }
 }
