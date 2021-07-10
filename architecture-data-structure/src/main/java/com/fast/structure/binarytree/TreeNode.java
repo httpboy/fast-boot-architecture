@@ -1,7 +1,7 @@
 package com.fast.structure.binarytree;
 
 /**
- * 二叉树节点
+ * 二叉搜索树节点
  */
 public class TreeNode {
     int data;
