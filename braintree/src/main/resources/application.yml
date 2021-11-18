@@ -1,0 +1,12 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: braintree
+braintree:
+  environment: "sanbox"
+  merchant-id: "grrpr8fxc6qngm94"
+  public-key: "zs6thhxvyjfk78n9"
+  private-key: "43b089c4582d40b2e7c1f62e999046d3"
+
+
