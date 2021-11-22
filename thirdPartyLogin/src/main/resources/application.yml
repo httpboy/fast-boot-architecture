@@ -1,0 +1,20 @@
+server:
+  port: 8083
+
+
+third:
+  login:
+    google:
+      authorize-url: https://accounts.google.com/o/oauth2/auth
+      access-token-url: https://www.googleapis.com/oauth2/v4/token
+      user-info-url: https://www.googleapis.com/userinfo/v2/me
+      app-id: 57299437086-5f0h26krs7gfjbgcivr559ao4427dbch.apps.googleusercontent.com
+      app-key: SypJkXCKERPSLgoQf_B3WB4L
+      redirect-url: https://localhost:8443/oauth/google/callback
+    facebook:
+      authorize-url: https://www.facebook.com/v12.0/dialog/oauth
+      access-token-url: https://graph.facebook.com/v12.0/oauth/access_token
+      user-info-url: https://graph.facebook.com/v12.0/me
+      app-id: 619898959023601
+      app-key: c95727f02499dcb6aeb924dba72f9365
+      redirect-url: https://localhost:8443/oauth/facebook/callback
