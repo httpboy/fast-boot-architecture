@@ -1,0 +1,26 @@
+server:
+  port: 8082
+spring:
+  mail:
+    host: smtp.qq.com
+    username: 495057454@qq.com
+    password: dhiqdpjiiwaibicg
+    protocol: smtp
+    properties.mail.smtp.auth: true
+    properties.mail.debug: true
+    properties.mail.smtp.port: 465   #465或者587
+    properties.mail.smtp.socketFactory.port: 465
+    properties.mail.display.sendmail: Javen
+    properties.mail.display.sendname: Spring Boot Guide Email
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.ssl.enable: true
+    properties.mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+    default-encoding: utf-8
+  freemarker:
+    template-loader-path: classpath:/email/
+    suffix: .ftl
+    cache: false
+    charset: utf-8
+    content-type: text/html
+    allow-request-override: false
