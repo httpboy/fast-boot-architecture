@@ -1,0 +1,15 @@
+server:
+  port: 8087
+
+grpc:
+  client:
+    local-grpc-server:
+      host: 127.0.0.1
+      port: 9898
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+#    local-grpc-server:
+#      address: 'static://127.0.0.1:9898'
+#      enableKeepAlive: true
+#      keepAliveWithoutCalls: true
+#      negotiationType: plaintext
