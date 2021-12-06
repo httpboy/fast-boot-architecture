@@ -4,9 +4,9 @@ import com.grpc.grpclib.HelloReply;
 import com.grpc.grpclib.HelloRequest;
 import com.grpc.grpclib.SimpleGrpc;
 import io.grpc.stub.StreamObserver;
-import net.devh.springboot.autoconfigure.grpc.server.GrpcService;
+import net.devh.boot.grpc.server.service.GrpcService;
 
-@GrpcService(SimpleGrpc.class)
+@GrpcService
 public class GrpcServerService extends SimpleGrpc.SimpleImplBase {
 
     @Override

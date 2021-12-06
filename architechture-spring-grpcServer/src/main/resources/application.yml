@@ -1,6 +1,10 @@
 grpc:
   server:
     port: 9898
+    security:
+      enabled: true
+      certificateChain: classpath:cert/server.crt
+      privateKey: classpath:cert/server.key
 spring:
   application:
     name: local-grpc-server
