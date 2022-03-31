@@ -54,8 +54,8 @@ public class GeneratorCodeConfig {
         PackageConfig pc = new PackageConfig();
 //        pc.setModuleName(scanner("模块名"));
         pc.setParent("com.fast.mybatisplus.architechturespringmybatisplus");
-        pc.setEntity("model.auto");
-        pc.setMapper("mapper.auto");
+        pc.setEntity("model");
+        pc.setMapper("mapper");
         pc.setService("service");
         pc.setServiceImpl("service.impl");
         mpg.setPackageInfo(pc);
