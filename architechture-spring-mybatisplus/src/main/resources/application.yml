@@ -2,13 +2,29 @@ server:
   port: 8088
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/mybatisplus_demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: 123456
-
-
+  shardingsphere:
+    datasource:
+      names: ds0
+      ds0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/mybatisplus_demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+        username: root
+        password: 123456
+    props:
+      sql:
+        show: true
+    sharding:
+      # 默认数据源
+      default-data-source-name: ds0
+      tables:
+        user:
+          actual-data-nodes: ds0.user_$->{202204..202205}
+          table-strategy:
+            standard:
+              sharding-column: create_time
+              preciseAlgorithmClassName: com.fast.mybatisplus.architechturespringmybatisplus.config.OrderPreciseShardingTableAlgorithm
+              rangeAlgorithmClassName: com.fast.mybatisplus.architechturespringmybatisplus.config.OrderRangeShardingTableAlgorithm
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
