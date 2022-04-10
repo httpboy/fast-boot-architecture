@@ -1,13 +1,17 @@
 package com.geoip2.ip.util;
 
+import cn.hutool.core.io.IoUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.DataBlock;
 import org.lionsoul.ip2region.DbConfig;
 import org.lionsoul.ip2region.DbSearcher;
 import org.lionsoul.ip2region.Util;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
+import java.io.InputStream;
 
 /**
  * ip查询处理
@@ -18,6 +22,7 @@ import java.io.File;
 public final class IpUtils {
 
     private static final String UNKOWN_ADDRESS = "未知位置";
+    private static DbSearcher searcher;
 
     /**
      * 根据IP获取地址
@@ -26,6 +31,19 @@ public final class IpUtils {
      */
     public static String getAddress(String ip) {
         return getAddress(ip, DbSearcher.BTREE_ALGORITHM);
+    }
+
+    @SneakyThrows
+    public static String getMemoryAddress(String ip) {
+        if (searcher == null) {
+            Resource resource = new DefaultResourceLoader().getResource("classpath:db/ip2region.db");
+            InputStream inputStream = resource.getInputStream();
+            byte[] bytes = IoUtil.readBytes(inputStream);
+            searcher = new DbSearcher(new DbConfig(), bytes);
+        }
+
+        DataBlock dataBlock = searcher.memorySearch(ip);
+        return dataBlock.getRegion();
     }
 
     /**
@@ -59,9 +77,6 @@ public final class IpUtils {
                 break;
             case DbSearcher.BINARY_ALGORITHM:
                 dataBlock = searcher.binarySearch(ip);
-                break;
-            case DbSearcher.MEMORY_ALGORITYM:
-                dataBlock = searcher.memorySearch(ip);
                 break;
             default:
                 log.error("未传入正确的查询算法");
