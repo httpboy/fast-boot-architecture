@@ -6,6 +6,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.AsnResponse;
 import com.maxmind.geoip2.model.CityResponse;
+import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.*;
 import org.lionsoul.ip2region.DataBlock;
 import org.lionsoul.ip2region.DbConfig;
@@ -43,17 +44,22 @@ public class IpController {
 
     public static DbSearcher searcher;
 
+    public static DatabaseReader reader;
+
     @GetMapping("getIp")
     @ResponseBody
     public String getIp(HttpServletRequest request) throws IOException, GeoIp2Exception, DbMakerConfigException {
         String realIP = IpUtil.getRealIP(request);
 //        // A File object pointing to your GeoIP2 or GeoLite2 database
 ////        File database = new File("/path/to/GeoIP2-City.mmdb");
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        Resource resource = resourceLoader.getResource("classpath:db/GeoLite2-City.mmdb");
+        if (reader == null) {
+            ResourceLoader resourceLoader = new DefaultResourceLoader();
+            Resource resource = resourceLoader.getResource("classpath:db/GeoLite2-Country.mmdb");
 //// This creates the DatabaseReader object. To improve performance, reuse
 //// the object across lookups. The object is thread-safe.
-        DatabaseReader reader = new DatabaseReader.Builder(resource.getInputStream()).build();
+            reader = new DatabaseReader.Builder(resource.getInputStream()).build();
+        }
+
 ////
         InetAddress ipAddress = InetAddress.getByName("1.0.0.0");
 //        InetAddress ipAddress = InetAddress.getByName("111.249.136.183");
@@ -61,44 +67,46 @@ public class IpController {
 //
 //// Replace "city" with the appropriate method for your database, e.g.,
 //// "country".
-        CityResponse response = reader.city(ipAddress);
+        CountryResponse response = reader.country(ipAddress);
         Country country = response.getCountry();
-        System.out.print(country.getIsoCode()+"|");            // 'US'
-        System.out.print(country.getName()+"|");               // 'United States'
-        System.out.print(country.getNames().get("zh-CN")+"|"); // '美国'
+        System.out.print(country.getIsoCode() + "|");            // 'US'
+        System.out.print(country.getName() + "|");               // 'United States'
+        System.out.print(country.getGeoNameId() + "|");               // 'United States'
+        System.out.println(country.getNames().get("zh-CN") + "|"); // '美国'
+//        CityResponse response = reader.city(ipAddress);
+//        Country country = response.getCountry();
+//        System.out.print(country.getIsoCode() + "|");            // 'US'
+//        System.out.print(country.getName() + "|");               // 'United States'
+//        System.out.print(country.getNames().get("zh-CN") + "|"); // '美国'
+//        Subdivision subdivision = response.getMostSpecificSubdivision();
+//        System.out.print(subdivision.getName() + "|");    // 'Minnesota'
+//        System.out.print(subdivision.getIsoCode() + "|"); // 'MN'
+//
+//        City city = response.getCity();
+//        System.out.print(city.getName() + "|"); // 'Minneapolis'
+//
+//        Postal postal = response.getPostal();
+//        System.out.print(postal.getCode() + "|"); // '55455'
+//
+//        Location location = response.getLocation();
+//        System.out.print(location.getLatitude() + "|");  // 44.9733
+//        System.out.print(location.getLongitude() + "|"); // -93.2323
 
-        Subdivision subdivision = response.getMostSpecificSubdivision();
-        System.out.print(subdivision.getName()+"|");    // 'Minnesota'
-        System.out.print(subdivision.getIsoCode()+"|"); // 'MN'
-
-        City city = response.getCity();
-        System.out.print(city.getName()+"|"); // 'Minneapolis'
-
-        Postal postal = response.getPostal();
-        System.out.print(postal.getCode()+"|"); // '55455'
-
-        Location location = response.getLocation();
-        System.out.print(location.getLatitude()+"|");  // 44.9733
-        System.out.print(location.getLongitude()+"|"); // -93.2323
-
-        System.out.println("isoCode:"+country.getIsoCode()+" name:"+country.getName()
-        +" ");
-        reader.close();
-        System.out.println(IpUtils.getMemoryAddress("1.0.0.0"));
-        System.out.println(IpUtils.getMemoryAddress("57.88.191.255"));
-        System.out.println(IpUtils.getMemoryAddress("57.82.47.255"));
-        System.out.println(IpUtils.getMemoryAddress("57.82.47.255"));
-        System.out.println(IpUtils.getMemoryAddress("2.20.127.255"));
-        System.out.println(IpUtils.getMemoryAddress("2.17.194.255"));
-        System.out.println(IpUtils.getMemoryAddress("57.85.31.255"));
-        System.out.println(IpUtils.getMemoryAddress("57.89.31.255"));
-        System.out.println(IpUtils.getMemoryAddress("57.93.79.255"));
-        System.out.println(IpUtils.getMemoryAddress("14.190.63.255"));
-        System.out.println(IpUtils.getMemoryAddress("122.200.61.255"));
-        System.out.println(IpUtils.getMemoryAddress("23.73.127.255"));
-        System.out.println(IpUtils.getMemoryAddress("23.219.155.255"));
-        System.out.println(IpUtils.getMemoryAddress("13.94.127.255"));
-        System.out.println(IpUtils.getMemoryAddress("1.0.31.255"));
+//        System.out.println(IpUtils.getMemoryAddress("1.0.0.0"));
+//        System.out.println(IpUtils.getMemoryAddress("57.88.191.255"));
+//        System.out.println(IpUtils.getMemoryAddress("57.82.47.255"));
+//        System.out.println(IpUtils.getMemoryAddress("57.82.47.255"));
+//        System.out.println(IpUtils.getMemoryAddress("2.20.127.255"));
+//        System.out.println(IpUtils.getMemoryAddress("2.17.194.255"));
+//        System.out.println(IpUtils.getMemoryAddress("57.85.31.255"));
+//        System.out.println(IpUtils.getMemoryAddress("57.89.31.255"));
+//        System.out.println(IpUtils.getMemoryAddress("57.93.79.255"));
+//        System.out.println(IpUtils.getMemoryAddress("14.190.63.255"));
+//        System.out.println(IpUtils.getMemoryAddress("122.200.61.255"));
+//        System.out.println(IpUtils.getMemoryAddress("23.73.127.255"));
+//        System.out.println(IpUtils.getMemoryAddress("23.219.155.255"));
+//        System.out.println(IpUtils.getMemoryAddress("13.94.127.255"));
+//        System.out.println(IpUtils.getMemoryAddress("1.0.31.255"));
 
 
         return "";
