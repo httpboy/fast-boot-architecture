@@ -8,8 +8,7 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * 订单表分片的范围匹配算法： 区别于inline中的expression表达式，此方法更加灵活
@@ -17,49 +16,41 @@ import java.util.Collection;
  * @author huangchangjin
  */
 @Slf4j
-public class OrderRangeShardingTableAlgorithm implements RangeShardingAlgorithm<Integer> {
+public class OrderRangeShardingTableAlgorithm implements RangeShardingAlgorithm<Date> {
 
     /**
      * 实现between and查询
      */
     @Override
-    public Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<Integer> rangeShardingValue) {
+    public Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<Date> rangeShardingValue) {
         log.info("availableTargetNames:{}\t shardingValue:{}", availableTargetNames, rangeShardingValue);
 
-        Collection<String> collect = new ArrayList<>();
-        Range<Integer> valueRange = rangeShardingValue.getValueRange();
-
-        log.info("valueRange:{}", valueRange);
-        Integer lowerEndpoint = null;
-        try {
-            lowerEndpoint = valueRange.lowerEndpoint();
-        } catch (Exception e) {
-            log.error("lowerEndpoint:{}", "最小边界值错误");
-        }
-        Integer upperEndpoint = null;
-        try {
-            upperEndpoint = valueRange.upperEndpoint();
-        } catch (Exception e) {
-            log.error("upperEndpoint:{}", "最大边界值错误");
-        }
-        log.info("lowerEndpoint:{} \t upperEndpoint:{}", lowerEndpoint, upperEndpoint);
-        if (lowerEndpoint == null && upperEndpoint != null) {
-            lowerEndpoint = upperEndpoint - 3;
-        }
-        if (upperEndpoint == null && lowerEndpoint != null) {
-            upperEndpoint = lowerEndpoint + 3;
-        }
-
-        for (Integer i = lowerEndpoint; i <= upperEndpoint; i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i))) {
-                    collect.add(each);
-                }
+        List<String> list = new ArrayList<>();
+        log.info("availableTargetNames : " + availableTargetNames);
+        log.info(rangeShardingValue.toString());
+        Range<Date> valueRange = rangeShardingValue.getValueRange();
+        Date lowerDate = valueRange.lowerEndpoint();
+        Date upperDate = valueRange.upperEndpoint();
+        String lowerSuffix = ShardingUtils.getSuffixByYearMonth(lowerDate);
+        String upperSuffix = ShardingUtils.getSuffixByYearMonth(upperDate);
+        TreeSet<String> suffixList = ShardingUtils.getSuffixListForRange(lowerSuffix, upperSuffix);
+        for (String tableName : availableTargetNames) {
+            if (containTableName(suffixList, tableName)) {
+                list.add(tableName);
             }
         }
+        log.info("match tableNames-----------------------" + list.toString());
+        return list;
+    }
 
-        log.info("collect:{}", JSON.toJSONString(collect));
-
-        return collect;
+    private boolean containTableName(Set<String> suffixList, String tableName) {
+        boolean flag = false;
+        for (String s : suffixList) {
+            if (tableName.endsWith(s)) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
 }

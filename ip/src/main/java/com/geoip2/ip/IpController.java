@@ -69,6 +69,7 @@ public class IpController {
 //// "country".
         CountryResponse response = reader.country(ipAddress);
         Country country = response.getCountry();
+        Continent continent = response.getContinent();
         System.out.print(country.getIsoCode() + "|");            // 'US'
         System.out.print(country.getName() + "|");               // 'United States'
         System.out.print(country.getGeoNameId() + "|");               // 'United States'
@@ -92,7 +93,7 @@ public class IpController {
 //        System.out.print(location.getLatitude() + "|");  // 44.9733
 //        System.out.print(location.getLongitude() + "|"); // -93.2323
 
-//        System.out.println(IpUtils.getMemoryAddress("1.0.0.0"));
+        System.out.println(IpUtils.getMemoryAddress("1.0.0.0"));
 //        System.out.println(IpUtils.getMemoryAddress("57.88.191.255"));
 //        System.out.println(IpUtils.getMemoryAddress("57.82.47.255"));
 //        System.out.println(IpUtils.getMemoryAddress("57.82.47.255"));
