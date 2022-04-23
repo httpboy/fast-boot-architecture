@@ -21,8 +21,8 @@ public class ShardingUtils {
             String tempSuffix = lowerSuffix;
             while (!tempSuffix.equals(upperSuffix)) {
                 suffixList.add(tempSuffix);
-//                String[] ym = tempSuffix.split("_");
-                Date tempDate = DateUtils.parseDate(tempSuffix, "yyyyMM");
+                String[] ym = tempSuffix.split("_");
+                Date tempDate = DateUtils.parseDate(ym[0] + (ym[1].length() == 1 ? "0" + ym[1] : ym[1]), "yyyyMM");
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(tempDate);
                 cal.add(Calendar.MONTH, 1);
@@ -36,9 +36,7 @@ public class ShardingUtils {
     public static String getSuffixByYearMonth(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        String monthValue = calendar.get(Calendar.MONTH) + 1 < 10 ? "0" + (calendar.get(Calendar.MONTH) + 1) : calendar.get(Calendar.MONTH) + 1 + "";
-
-        return calendar.get(Calendar.YEAR) + monthValue;
+        return calendar.get(Calendar.YEAR) + "_" + (calendar.get(Calendar.MONTH) + 1);
     }
 
     public static String getPrevSuffix(String suffix) {

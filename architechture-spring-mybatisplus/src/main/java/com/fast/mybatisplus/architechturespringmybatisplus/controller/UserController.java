@@ -52,7 +52,7 @@ public class UserController {
         user.setUserName("陈博易" + nextInt);
         user.setUserPass(nextInt + "");
         user.setCreateUser("boyi.chen");
-        user.setCreateTime(dates.get(new Random().nextInt(3)));
+        user.setCreateTime(dates.get(new Random().nextInt(5)));
         boolean save = userService.save(user);
 
         return true;
@@ -68,11 +68,14 @@ public class UserController {
 //        wrapper.eq(User::getId, "10");
 //        wrapper.eq(User::getCreateTime,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2022-04-10 23:37:03"));
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.ge(User::getCreateTime, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2022-04-15 23:08:07"));
-        wrapper.le(User::getCreateTime, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2023-05-16 23:08:31"));
+        wrapper.eq(User::getId,26);
+        wrapper.eq(User::getCreateTime,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2022-10-15 23:08:07"));
+
+//        wrapper.ge(User::getCreateTime, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2022-10-15 23:08:07"));
+//        wrapper.le(User::getCreateTime, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2023-02-16 23:08:31"));
 
 
-        IPage pageResult = userService.page(new Page<>(1, 40), wrapper);
+        IPage pageResult = userService.page(new Page<>(1, 10), wrapper);
 
         return pageResult;
     }
